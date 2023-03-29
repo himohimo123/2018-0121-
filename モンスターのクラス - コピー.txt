@@ -1,0 +1,461 @@
+#遊戯王のルール
+#墓地と手札
+class Player:
+    def __init__(self, deck):
+        self.deck = deck
+        self.hand = []
+        self.life_points = 8000
+        self.field = []
+        self.graveyard = []
+
+    def draw_phase(self):
+        if len(self.deck) > 0:
+            self.hand.append(self.deck.pop(0))
+        else:
+            self.life_points = 0
+            print("No cards left in deck! You lose!")
+            
+    def draw_card_effect(self):
+        if len(self.deck) > 0:
+            card_effect = self.hand.pop(0)
+            card_effect.activate(self)
+        else:
+            self.life_points = 0
+            print("No cards left in deck! You lose!")
+
+    def attack(self, attacking_card, target_card=None):
+        if target_card is None:
+            self.opponent.life_points -= attacking_card.attack
+        else:
+            attacking_card.attack_card(target_card)
+
+    def end_turn(self):
+        for card in self.field:
+            card.can_attack = True
+            card.played = False
+
+    def send_to_graveyard(self, card):
+        self.graveyard.append(card)
+        if card in self.hand:
+            self.hand.remove(card)
+        elif card in self.field:
+            self.field.remove(card)
+
+#戦闘破壊されたカードが墓地へ行く
+
+def battle_phase():
+    attack_target = get_attack_target()
+    attack(attack_target)
+    if attack_target.is_destroyed():
+        player_turn.send_to_graveyard(attack_target)
+    else:
+        damage_step()
+♯手札からプレイして墓地へ行く
+
+def main_phase1():
+    while True:
+        action = get_player_action()
+        if action == "end":
+            break
+        elif action == "summon":
+            card = select_card_from_hand(player_turn.hand)
+            if isinstance(card, MonsterCard):
+                summon_monster(card)
+                player_turn.send_to_graveyard(card.name)
+        elif action == "set":
+            card = select_card_from_hand(player_turn.hand)
+            if isinstance(card, SpellCard):
+                set_spell(card)
+                player_turn.send_to_graveyard(card.name)
+        elif action == "activate":
+            card = select_card_from_field(player_turn.field)
+            if isinstance(card, SpellCard) and not card.activated:
+                activate_spell(card)
+                player_turn.send_to_graveyard
+
+
+
+
+
+class Player:
+    def __init__(self, deck):
+        self.deck = deck
+        self.hand = []
+        self.life_points = 8000
+        self.field = []
+
+    def draw_phase(self):
+        if len(self.deck) > 0:
+            self.hand.append(self.deck.pop(0))
+        else:
+            self.life_points = 0
+            print("No cards left in deck! You lose!")
+            
+    def draw_card_effect(self):
+        if len(self.deck) > 0:
+            card_effect = self.hand.pop(0)
+            card_effect.activate(self)
+        else:
+            self.life_points = 0
+            print("No cards left in deck! You lose!")
+
+    def attack(self, attacking_card, target_card=None):
+        if target_card is None:
+            self.opponent.life_points -= attacking_card.attack
+        else:
+            attacking_card.attack_card(target_card)
+
+    def end_turn(self):
+        for card in self.field:
+            card.can_attack = True
+            card.played = False
+
+class Card:
+    def __init__(self, name, attack, defense):
+        self.name = name
+        self.attack = attack
+        self.defense = defense
+        self.played = False
+        self.can_attack = False
+
+    def attack_card(self, target_card):
+        if self.can_attack:
+            target_card.defense -= self.attack
+            self.defense -= target_card.attack
+            if target_card.defense <= 0:
+                self.opponent.field.remove(target_card)
+
+    def special_win_condition(self, opponent):
+        pass
+
+class Game:
+    def __init__(self, player1, player2):
+        self.player1 = player1
+        self.player2 = player2
+        self.current_player = player1
+
+    def switch_turn(self):
+        if self.current_player == self.player1:
+            self.current_player = self.player2
+        else:
+            self.current_player = self.player1
+
+    def run(self):
+        while self.player1.life_points > 0 and self.player2.life_points > 0:
+            self.current_player.draw_card()
+            self.current_player.play_card()
+            self.current_player.attack()
+            self.current_player.end_turn()
+            self.switch_turn()
+
+        if self.player1.life_points <= 0 and self.player2.life_points <= 0:
+            print("引き分けです。")
+        elif self.player1.life_points <= 0:
+            print("Player2の勝利です。")
+        else:
+            print("Player1の勝利です。")
+
+♯フェイズ
+# ドローフェイズ
+def draw_phase():
+    draw_card(player_turn)
+
+if (currentPlayer == firstPlayer && turnCount == 1) {
+  // 先行プレイヤーの1ターン目のドローフェイズはドローできない
+  endPhase();
+} else {
+  drawCard(currentPlayer);
+}
+
+
+# スタンバイフェイズ
+def standby_phase():
+    check_special_summon_condition()
+    check_effect_timing()
+
+# メインフェイズ1
+def main_phase1():
+    while True:
+        action = get_player_action()
+        if action == "end":
+            break
+        elif action == "summon":
+            summon_monster()
+        elif action == "set":
+            set_card()
+        elif action == "activate":
+            activate_card()
+
+# バトルフェイズ
+def battle_phase():
+    attack_target = get_attack_target()
+    attack(attack_target)
+    if attack_target.is_destroyed():
+        send_to_graveyard(attack_target)
+    else:
+        damage_step()
+
+# メインフェイズ2
+def main_phase2():
+    while True:
+        action = get_player_action()
+        if action == "end":
+            break
+        elif action == "summon":
+            summon_monster()
+        elif action == "set":
+            set_card()
+
+
+
+#モンスターカード
+class Card:
+    def __init__(self, attribute, level, race, attack, defense):
+        self.attribute = attribute
+        self.attack = attack
+        self.defense = defense
+
+class EffectMonster:
+    def __init__(self, name, attribute,atk, def_, effect):
+        self.name = name
+        self.attribute = attribute
+        self.atk = atk
+        self.def_ = def_
+        self.effect = effect
+
+    def activate_effect(self):
+        print(self.name + "の効果を発動！" + self.effect)
+
+class LinkMonster(Card):
+    def __init__(self, attribute, attack, link_arrows):
+        super().__init__(attribute, None, None, attack, None)
+        self.link_arrows = link_arrows
+
+    def show_info(self):
+        print("Attribute: " + self.attribute)
+        print("ATK: " + str(self.attack))
+
+class FusionMonster(Card):
+    def __init__(self, attribute, attack, materials, effect=None):
+        super().__init__(attribute, None, None, attack, None)
+        self.materials = materials
+        self.effect = effect
+
+    def show_info(self):
+        print("Attribute: " + self.attribute)
+        print("ATK: " + str(self.attack))
+        print("Materials: " + ", ".join(self.materials))
+
+class SynchroMonster(Card):
+    def __init__(self, attribute, level, attack, tuner_materials, non_tuner_materials, effect=None):
+        super().__init__(attribute, level, None, attack, None)
+        self.tuner_materials = tuner_materials
+        self.non_tuner_materials = non_tuner_materials
+        self.effect = effect
+    
+    def show_info(self):
+        print("Attribute: " + self.attribute)
+        print("Level: " + str(self.level))
+        print("ATK: " + str(self.attack))
+        print("Tuner Materials: " + ", ".join(self.tuner_materials))
+        print("Non-Tuner Materials: " + ", ".join(self.non_tuner_materials))
+
+class XyzMonster(Card):
+    def __init__(self, attribute, rank, materials, effect=None):
+        super().__init__(attribute, None, None, None, None)
+        self.rank = rank
+        self.materials = materials
+        self.effect = effect
+
+    def show_info(self):
+        print("Attribute: " + self.attribute)
+        print("Rank: " + str(self.rank))
+        print("Materials: " + ", ".join(self.materials))
+
+
+class MagicCard:
+    def __init__(self, name, description):
+        self.name = name
+        self.description = description
+
+    def activate(self):
+        pass
+
+class QuickPlayMagic(MagicCard):
+    def __init__(self, name, description):
+        super().__init__(name, description)
+        self.category = "Quick-Play"
+
+    def activate(self):
+        print(f"{self.name} has been activated as a Quick-Play Magic Card!")
+        # 速攻魔法の効果を実装するコードをここに書く
+
+class RitualMagic(MagicCard):
+    def __init__(self, name, description):
+        super().__init__(name, description)
+        self.category = "Ritual"
+
+    def activate(self):
+        print(f"{self.name} has been activated as a Ritual Magic Card!")
+        # 儀式魔法の効果を実装するコードをここに書く
+
+class ContinuousSpellCard(MagicCard):
+    def __init__(self, name, description, effect):
+        super().__init__(name, description)
+        self.effect = effect
+        self.duration = None
+        self.triggered_effect = None
+        
+    def set_duration(self, duration):
+        self.duration = duration
+        
+    def set_triggered_effect(self, triggered_effect):
+        self.triggered_effect = triggered_effect
+        
+    def activate(self):
+        print(f"{self.name} has been activated as a Continuous Spell Card!")
+        # 持続魔法の効果を実装するコードをここに書く
+        
+    def deactivate(self):
+        self.triggered_effect = None
+        
+    def __str__(self):
+        return f"{self.name} - {self.description} (Continuous Spell)"
+        
+class TrapCard:
+    def __init__(self, name, description):
+        self.name = name
+        self.description = description
+
+    def activate(self):
+        pass
+
+class CounterTrap(TrapCard):
+    def __init__(self, name, description):
+        super().__init__(name, description)
+
+    def activate(self):
+        print("Counter trap activated.")
+
+class ContinuousTrapCard(TrapCard):
+    def __init__(self, name, description, effect):
+        super().__init__(name, description)
+        self.effect = effect
+        self.duration = None
+        self.triggered_effect = None
+        
+    def set_duration(self, duration):
+        self.duration = duration
+        
+    def set_triggered_effect(self, triggered_effect):
+        self.triggered_effect = triggered_effect
+        
+    def activate(self):
+        print(f"{self.name} has been activated as a Continuous Trap Card!")
+        # 持続罠の効果を実装するコードをここに書く
+        
+    def deactivate(self):
+        self.triggered_effect = None
+        
+    def __str__(self):
+        return f"{self.name} - {self.description} (Continuous Trap)"
+
+#チェーン
+class Chain:
+    def __init__(self):
+        self.chain = []
+
+    def add_effect(self, effect):
+        self.chain.append(effect)
+
+    def resolve_chain(self):
+        for effect in reversed(self.chain):
+            effect.resolve()
+        self.chain = []
+
+class Player:
+    def __init__(self, name, deck):
+        self.name = name
+        self.deck = deck
+        self.hand = []
+        self.field = []
+        self.graveyard = []
+        
+    def draw(self):
+        card = self.deck.pop(0)
+        self.hand.append(card)
+        
+    def play_card(self, card):
+        self.hand.remove(card)
+        self.field.append(card)
+        card.effect(self)
+
+class Game:
+    def __init__(self, player1, player2):
+        self.turn = 1
+        self.current_player = player1
+        self.opponent = player2
+        
+    def start_game(self):
+        self.current_player.draw()
+        
+    def next_turn(self):
+        self.turn += 1
+        self.current_player, self.opponent = self.opponent, self.current_player
+        
+    def play(self, card):
+        if self.current_player == card.owner:
+            card.effect()
+        else:
+            print("You can't play that card on your opponent's turn.")
+
+class Deck:
+    def __init__(self, cards):
+        self.cards = cards  # デッキに含まれるカードのリスト
+
+    def shuffle(self):
+        random.shuffle(self.cards)  # カードをシャッフルする
+
+    def draw(self):
+        if len(self.cards) > 0:
+            return self.cards.pop(0)  # デッキから1枚カードを引く
+        else:
+            return None
+
+class Hand:
+    def __init__(self):
+        self.cards = []  # 手札に含まれるカードのリスト
+
+    def add(self, card):
+        self.cards.append(card)  # カードを手札に加える
+
+    def remove(self, card):
+        self.cards.remove(card)  # カードを手札から除く
+
+class Graveyard:
+    def __init__(self):
+        self.cards = []  # 墓地に含まれるカードのリスト
+
+    def add(self, card):
+        self.cards.append(card)  # カードを墓地に加える
+
+class Field:
+    def __init__(self):
+        self.monster_zones = [None] * 5  # モンスターゾーンに配置されたモンスターのリスト
+        self.spell_zones = [None] * 5  # 魔法・罠ゾーンに配置されたカードのリスト
+        self.field_spell_zone = None  # フィールド魔法ゾーンに配置されたカード
+        self.extra_monster_zones = [None] * 2  # エクストラモンスターゾーンに配置されたモンスターのリスト
+
+    def add_card(self, card, zone):
+        if isinstance(card, MonsterCard):
+            self.monster_zones[zone] = card  # モンスターゾーンにカードを配置する
+        elif isinstance(card, SpellCard) or isinstance(card, TrapCard):
+            self.spell_zones[zone] = card  # 魔法・罠ゾーンにカードを配置する
+        elif isinstance(card, FieldSpellCard):
+            self.field_spell_zone = card  # フィールド魔法ゾーンにカードを配置する
+
+    def remove_card(self, card):
+        if isinstance(card, MonsterCard):
+            self.monster_zones.remove(card)  # モンスターゾーンからカードを除く
+        elif isinstance(card, SpellCard) or isinstance(card, TrapCard):
+            self.spell_zones.remove(card)  # 魔法・罠ゾーンからカードを除く
